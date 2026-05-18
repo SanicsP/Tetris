@@ -1,0 +1,9 @@
+.vscode/
+build/
+CSFML/
+*.png
+*.odg
+*.exe
+*.a
+*.bin
+*.o
