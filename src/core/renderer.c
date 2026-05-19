@@ -6,7 +6,7 @@
 
 void renderer_init(Renderer* renderer) {
 
-    renderer->origin = (sfVector2i){0 , 0};
+    renderer->origin = (sfVector2i){100 , 100};
     renderer->cell_size = RENDERER_CELL_SIZE;
     
     for(int y = 0 ; y < GRID_HEIGHT ; y++){
@@ -53,6 +53,10 @@ void renderer_free_ressources(Renderer* renderer) {
     for(int i = 0 ; i < GRID_HEIGHT*GRID_WIDTH ; i++){
         sfRectangleShape_destroy(renderer->grid_cells[i]);
     }
+
+    for(int i = 0 ; i < T_PIECE_WIDTH*T_PIECE_HEIGHT ; i++) {
+        sfRectangleShape_destroy(renderer->falling_piece_cells[i]);
+    }
 }
 
 void renderer_update_state(Renderer* renderer , const T_PieceGrid* grid){
@@ -61,9 +65,10 @@ void renderer_update_state(Renderer* renderer , const T_PieceGrid* grid){
         for(int x = 0 ; x < GRID_WIDTH ; x++) 
         {
             int grid_cell = grid->pieces[FLAT_2D(x , y , GRID_WIDTH)];
+            
             sfRectangleShape *rect = renderer->grid_cells[FLAT_2D(x , y , GRID_WIDTH)];
 
-            if(grid_cell) {
+            if(grid_cell == FILLED) {
                 sfRectangleShape_setFillColor(rect , sfGreen);
                 sfRectangleShape_setSize(rect , (sfVector2f){renderer->cell_size , renderer->cell_size});
 
@@ -111,7 +116,7 @@ void renderer_update_state(Renderer* renderer , const T_PieceGrid* grid){
 
     }
 
-    printf("num rendered : %d \n" , n);
+    //printf("num rendered : %d \n" , n);
 
     
 }

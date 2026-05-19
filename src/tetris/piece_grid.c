@@ -39,8 +39,12 @@ void T_PieceGrid_PastPiece(T_PieceGrid* grid , const T_Piece* piece) {
         
         for(int x_offset = 0 ; x_offset < T_PIECE_WIDTH ; x_offset++)
         {
-            grid->pieces[FLAT_2D(piece->position.x + x_offset , piece->position.y + y_offset , GRID_WIDTH)] = 
-            piece->data[FLAT_3D(x_offset , y_offset , piece->orientation , T_PIECE_WIDTH , T_PIECE_HEIGHT)];
+            int piece_tok_index = FLAT_3D(x_offset , y_offset , piece->orientation , T_PIECE_WIDTH , T_PIECE_HEIGHT);
+            int grid_tok_index = FLAT_2D(piece->position.x + x_offset , piece->position.y + y_offset , GRID_WIDTH);
+
+            if(piece->data[piece_tok_index]) {
+                grid->pieces[grid_tok_index] = T_FILLED; 
+            }
         }
 
     }
@@ -58,6 +62,7 @@ void T_PieceGrid_Update(T_PieceGrid* grid)
             break;
         }
         case T_GS_FALLING : {
+            
             grid->state = T_Piece_TryTranslation(grid->failling_piece , PSIDE_DOWN , grid).new_state;
 
             if(grid->state == T_GS_UPDATE) {
@@ -74,7 +79,7 @@ void T_PieceGrid_Update(T_PieceGrid* grid)
         }
 
         case T_GS_REMOVE : {
-            
+            grid->state = T_PieceGrid_TryRemoveAlignedTokens(grid);
             break;
         }
     }
@@ -96,28 +101,31 @@ int T_PieceGrid_ReajustTokens(T_PieceGrid* grid) {
     int reajustments = 1;
     int reajusted = 0;
 
+    printf("trying to reajust tokens\n");
+
     while (reajustments)
     {
         reajustments = 0;
 
-        for(int y = 0; y < GRID_HEIGHT; y++) {
+        for(int y = 0; y < GRID_HEIGHT-1; y++) {
             
             for(int x = 0; x < GRID_WIDTH; x++) {
-                int lower_y = y - 1;
-
-                if (lower_y >= GRID_HEIGHT) break;
-
-                int *token = &grid->pieces[FLAT_2D(x , y , GRID_WIDTH)];
                 
-                if(*token == EMPTY) break;
+                int token_idx = FLAT_2D(x , y , GRID_WIDTH);
 
-                int * lower_token = &grid->pieces[FLAT_2D(x , lower_y , GRID_WIDTH)];
+                int token = grid->pieces[token_idx];
 
-                if (&lower_token == EMPTY) {
-                    *token = EMPTY;
-                    *lower_token = FILLED;
+                int lower_token_idx = FLAT_2D(x , y + 1 , GRID_WIDTH);
+                
+                int lower_token = grid->pieces[lower_token_idx];
+
+                
+                if (token && !lower_token) {
+                    grid->pieces[token_idx] = EMPTY;
+                    grid->pieces[lower_token_idx] = FILLED;
                     reajusted = 1;
                     reajustments = 1;
+                    printf("\t reajusted\n");
                 }
 
             }
@@ -125,10 +133,38 @@ int T_PieceGrid_ReajustTokens(T_PieceGrid* grid) {
         }
     }
 
-    return T_GS_INIT;
+    return T_GS_REMOVE;
     
 }
 
 int T_PieceGrid_TryRemoveAlignedTokens(T_PieceGrid * grid) {
+    
+    int row_removed = 0;
 
+    int at_least_one_empty = 0;
+    printf("attempt to remove a row\n");
+
+    for(int y = GRID_HEIGHT - 1 ; y >= 0 ; y--) {
+        
+        at_least_one_empty = 0;
+
+        for(int x = 0 ; x < GRID_WIDTH ; x++ ) {
+            if(!grid->pieces[FLAT_2D(x , y , GRID_WIDTH)]) at_least_one_empty = 1;
+        }
+
+        if(!at_least_one_empty) {
+            row_removed = 1;
+            for(int x = 0 ; x < GRID_WIDTH ; x++) {
+                grid->pieces[FLAT_2D(x , y , GRID_WIDTH)] = T_EMPTY;
+            }
+            printf("\t row removed\n");
+
+            break;
+        }
+        else {
+            printf("\t at least one empty in the row %d\n" , y );
+        }
+    }
+
+    return row_removed ? T_GS_UPDATE : T_GS_INIT; 
 }

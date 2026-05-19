@@ -11,7 +11,7 @@ void game_init(Game* game) {
         exit(EXIT_FAILURE);
     }
 
-    sfRenderWindow_setFramerateLimit(game->window , 15);
+    sfRenderWindow_setFramerateLimit(game->window , 20);
 
     renderer_init(&game->renderer);
 
@@ -49,12 +49,24 @@ void game_loop(Game* game){
         
         //T_Piece_TryTranslation(game->tetris_grid->failling_piece , PSIDE_DOWN , game->tetris_grid);
         
+        if(sfKeyboard_isKeyPressed(sfKeyRight)) {
+            T_Piece_TryTranslation(game->tetris_grid->failling_piece , PSIDE_RIGHT , game->tetris_grid);
+        }
+        else if(sfKeyboard_isKeyPressed(sfKeyLeft)) {
+            T_Piece_TryTranslation(game->tetris_grid->failling_piece , PSIDE_LEFT , game->tetris_grid);
+        }
+        else if (sfKeyboard_isKeyPressed(sfKeyA)) {
+            T_Piece_TryRotation(game->tetris_grid->failling_piece , -1 , game->tetris_grid);
+        }
+        else if (sfKeyboard_isKeyPressed(sfKeyZ)) {
+            T_Piece_TryRotation(game->tetris_grid->failling_piece , 1 , game->tetris_grid);
+        }
+
+
+
         T_PieceGrid_Update(game->tetris_grid);
         
-        
-        
         sfRenderWindow_clear(game->window , sfBlack);
-        
         
         renderer_update_state(&game->renderer , game->tetris_grid);
         

@@ -94,9 +94,7 @@ T_PieceTransformResult T_Piece_TryRotation(T_Piece* piece , int positive , T_Pie
     
     int current_rotation = piece->orientation;
 
-    int new_rotation = 0;
-
-    new_rotation += positive >= 0 ? 1 : -1;
+    int new_rotation = piece->orientation + positive;
     
     if(new_rotation > T_UP_ROTATION) new_rotation = T_RIGHT_ROTATION;
     
@@ -172,8 +170,8 @@ int T_Piece_IsOverlaping(sfVector2i new_position , int new_rotation , const T_Pi
     for(int y_offset = 0 ; y_offset < T_PIECE_HEIGHT ; y_offset++) {
         for(int x_offset = 0 ; x_offset < T_PIECE_WIDTH; x_offset++ ) {
             
-            int piece_token = piece->data[T_FLATTEN_DATA(x_offset , y_offset , piece->orientation)];
-            int grid_token = grid->pieces[T_FLATTEN_DATA_2D(piece->position.x + x_offset , piece->position.y + y_offset)];
+            int piece_token = piece->data[FLAT_3D(x_offset , y_offset , piece->orientation , T_PIECE_WIDTH , T_PIECE_HEIGHT)];
+            int grid_token = grid->pieces[FLAT_2D(piece->position.x + x_offset , piece->position.y + y_offset + 1 , GRID_WIDTH)];
 
             if(piece_token && grid_token) {
                 printf("\t[OVERLAP CHECK] OVERLAP \n");
@@ -199,7 +197,7 @@ int T_Piece_IsOutOfBounds(sfVector2i new_position , int new_rotation , const T_P
 
             if(
                 new_position.x + x_offset >= 0 && new_position.x + x_offset <= GRID_WIDTH 
-                && new_position.y + y_offset >= 0 && new_position.y + y_offset <= GRID_HEIGHT
+                && new_position.y + y_offset >= 0 && new_position.y + y_offset < GRID_HEIGHT
             ) continue;
             
             int token = piece->data[T_FLATTEN_DATA(x_offset , y_offset , piece->orientation)];
