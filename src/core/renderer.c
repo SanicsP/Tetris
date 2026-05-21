@@ -6,7 +6,7 @@
 
 void renderer_init(Renderer* renderer) {
 
-    renderer->origin = (sfVector2i){100 , 100};
+    renderer->origin = (sfVector2i){0 , 0};
     renderer->cell_size = RENDERER_CELL_SIZE;
     
     for(int y = 0 ; y < GRID_HEIGHT ; y++){
@@ -99,10 +99,8 @@ void renderer_update_state(Renderer* renderer , const T_PieceGrid* grid){
                 } );
             
             if(piece_cell) {
-                sfRectangleShape_setFillColor(rect , sfGreen);
+                sfRectangleShape_setFillColor(rect , grid->failling_piece->color);
                 sfRectangleShape_setSize(rect , (sfVector2f){renderer->cell_size , renderer->cell_size});
-                
-                
                 n++;
             }
             else {

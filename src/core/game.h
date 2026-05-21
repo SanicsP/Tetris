@@ -7,6 +7,8 @@
 #include "renderer.h"
 #include <piece.h>
 
+#define GAME_FPS 10
+
 typedef enum {
     GS_LAUNCH,
     GS_STATE_PLAYING,

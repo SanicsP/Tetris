@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define RENDERER_CELL_SIZE 10 
+#define RENDERER_CELL_SIZE 20 
 
 
 typedef struct Renderer_S {

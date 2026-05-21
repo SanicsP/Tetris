@@ -52,18 +52,23 @@ void T_PieceGrid_PastPiece(T_PieceGrid* grid , const T_Piece* piece) {
 }
 
 
-void T_PieceGrid_Update(T_PieceGrid* grid) 
+void T_PieceGrid_Update(T_PieceGrid* grid , int query_rotation , int query_translation) 
 {
     switch (grid->state)
     {
         case T_GS_INIT : {
-            T_PieceGrid_NewPiece(grid , PT_J_PIECE);
+            T_PieceGrid_NewPiece(grid , rand() % 7);
             grid->state = T_GS_FALLING;
             break;
         }
         case T_GS_FALLING : {
             
+            T_Piece_TryRotation(grid->failling_piece , query_rotation , grid);
+            
+            T_Piece_TryTranslation(grid->failling_piece , query_translation , grid).new_state;
+
             grid->state = T_Piece_TryTranslation(grid->failling_piece , PSIDE_DOWN , grid).new_state;
+
 
             if(grid->state == T_GS_UPDATE) {
                 T_PieceGrid_PastPiece(grid , grid->failling_piece);
@@ -73,8 +78,9 @@ void T_PieceGrid_Update(T_PieceGrid* grid)
     
         case T_GS_UPDATE : 
         {
-            printf("update state rechead\n");
-            grid->state = T_PieceGrid_ReajustTokens(grid);
+            //printf("update state rechead\n");
+            //grid->state = T_PieceGrid_ReajustTokens(grid);
+            grid->state = T_GS_REMOVE;
             break; 
         }
 
@@ -90,7 +96,7 @@ void T_PieceGrid_NewPiece(T_PieceGrid* grid , int type) {
     T_Piece_Destroy(grid->failling_piece);
     grid->failling_piece = T_Piece_Create(type);
 
-    printf("new piece created\n");
+    //printf("new piece created\n");
 
 }
 
@@ -101,7 +107,7 @@ int T_PieceGrid_ReajustTokens(T_PieceGrid* grid) {
     int reajustments = 1;
     int reajusted = 0;
 
-    printf("trying to reajust tokens\n");
+    // printf("trying to reajust tokens\n");
 
     while (reajustments)
     {
@@ -125,7 +131,7 @@ int T_PieceGrid_ReajustTokens(T_PieceGrid* grid) {
                     grid->pieces[lower_token_idx] = FILLED;
                     reajusted = 1;
                     reajustments = 1;
-                    printf("\t reajusted\n");
+                    //printf("\t reajusted\n");
                 }
 
             }
@@ -141,8 +147,11 @@ int T_PieceGrid_TryRemoveAlignedTokens(T_PieceGrid * grid) {
     
     int row_removed = 0;
 
+    int row_height = 0;
+
     int at_least_one_empty = 0;
-    printf("attempt to remove a row\n");
+
+    // printf("attempt to remove a row\n");
 
     for(int y = GRID_HEIGHT - 1 ; y >= 0 ; y--) {
         
@@ -154,17 +163,42 @@ int T_PieceGrid_TryRemoveAlignedTokens(T_PieceGrid * grid) {
 
         if(!at_least_one_empty) {
             row_removed = 1;
+            row_height = y;
             for(int x = 0 ; x < GRID_WIDTH ; x++) {
                 grid->pieces[FLAT_2D(x , y , GRID_WIDTH)] = T_EMPTY;
             }
-            printf("\t row removed\n");
+            // printf("\t row removed\n");
 
             break;
         }
         else {
-            printf("\t at least one empty in the row %d\n" , y );
+            // printf("\t at least one empty in the row %d\n" , y );
         }
     }
 
-    return row_removed ? T_GS_UPDATE : T_GS_INIT; 
+    if(row_removed) T_PieceGrid_ShrinkTokens(grid , row_height);
+
+    return row_removed ? T_GS_REMOVE : T_GS_INIT; 
+}
+
+int T_PieceGrid_ShrinkTokens(T_PieceGrid* grid  , int removed_row) {
+
+
+    for(int y = removed_row - 1; y > 0 ; y--) {
+        // printf("row reajusted\n");
+        for(int x = 0 ; x < GRID_WIDTH ; x++) 
+        {
+            
+            int piece_idx  = FLAT_2D(x , y , GRID_WIDTH);
+            int low_piece_idx = FLAT_2D(x , y + 1 , GRID_WIDTH);
+            
+            grid->pieces[low_piece_idx] = grid->pieces[piece_idx];
+            grid->pieces[piece_idx] = T_EMPTY;
+
+        }
+
+    }
+
+    // printf("tokens shrinked\n");
+
 }

@@ -7,8 +7,8 @@
 #define FILLED     1
 #define EMPTY      0
 
-#define GRID_WIDTH 10
-#define GRID_HEIGHT 20
+#define GRID_WIDTH 15
+#define GRID_HEIGHT 30
 
 #include <stdlib.h>
 #include <string.h>
@@ -45,12 +45,16 @@ void T_PieceGrid_Destroy(T_PieceGrid* grid);
 */
 void T_PieceGrid_PastPiece(T_PieceGrid* grid , const T_Piece* piece);
 
-void T_PieceGrid_Update(T_PieceGrid* grid);
+void T_PieceGrid_Update(T_PieceGrid* grid , int query_rotation , int query_translation);
 
 void T_PieceGrid_NewPiece(T_PieceGrid* grid , int type);
 
 int T_PieceGrid_ReajustTokens(T_PieceGrid* grid);
 
+
 int T_PieceGrid_TryRemoveAlignedTokens(T_PieceGrid * grid);
+
+int T_PieceGrid_ShrinkTokens(T_PieceGrid* grid  , int removed_row);
+
 
 #endif

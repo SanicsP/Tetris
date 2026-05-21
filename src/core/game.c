@@ -3,7 +3,7 @@
 
 void game_init(Game* game) {
     
-    game->window = sfRenderWindow_create((sfVideoMode){.size.x = 400 , .size.y = 400} , "TETRIS" , sfDefaultStyle , 0 , NULL);
+    game->window = sfRenderWindow_create((sfVideoMode){.size.x = 800 , .size.y = 800} , "TETRIS" , sfDefaultStyle , 0 , NULL);
     
     if(!game->window)
     {
@@ -11,7 +11,7 @@ void game_init(Game* game) {
         exit(EXIT_FAILURE);
     }
 
-    sfRenderWindow_setFramerateLimit(game->window , 20);
+    sfRenderWindow_setFramerateLimit(game->window , GAME_FPS);
 
     renderer_init(&game->renderer);
 
@@ -48,23 +48,24 @@ void game_loop(Game* game){
         
         
         //T_Piece_TryTranslation(game->tetris_grid->failling_piece , PSIDE_DOWN , game->tetris_grid);
-        
+        int query_rotation = 0;
+        int query_translation = -1;
+
         if(sfKeyboard_isKeyPressed(sfKeyRight)) {
-            T_Piece_TryTranslation(game->tetris_grid->failling_piece , PSIDE_RIGHT , game->tetris_grid);
+            query_translation = PSIDE_RIGHT;
         }
         else if(sfKeyboard_isKeyPressed(sfKeyLeft)) {
-            T_Piece_TryTranslation(game->tetris_grid->failling_piece , PSIDE_LEFT , game->tetris_grid);
+            query_translation = PSIDE_LEFT;
         }
-        else if (sfKeyboard_isKeyPressed(sfKeyA)) {
-            T_Piece_TryRotation(game->tetris_grid->failling_piece , -1 , game->tetris_grid);
+        else if(sfKeyboard_isKeyPressed(sfKeyDown)) {
+            query_translation = PSIDE_DOWN;
         }
-        else if (sfKeyboard_isKeyPressed(sfKeyZ)) {
-            T_Piece_TryRotation(game->tetris_grid->failling_piece , 1 , game->tetris_grid);
+        
+        if (sfKeyboard_isKeyPressed(sfKeyUp)) {
+            query_rotation = 1;
         }
 
-
-
-        T_PieceGrid_Update(game->tetris_grid);
+        T_PieceGrid_Update(game->tetris_grid , query_rotation , query_translation);
         
         sfRenderWindow_clear(game->window , sfBlack);
         

@@ -8,6 +8,8 @@
 
 #include <tetris_constants.h>
 
+#include <utils.h>
+
 
 
 
@@ -125,7 +127,7 @@
 #define L_PIECE {               \
     0 , 0 , 0 , 1 ,             \
     0 , 0 , 0 , 1 ,             \
-    0 , 1 , 1 , 1 ,             \
+    0 , 0 , 1 , 1 ,             \
     0 , 0 , 0 , 0 ,             \
                                 \
     0 , 0 , 1 , 0 ,             \
@@ -197,6 +199,7 @@ typedef struct T_Piece_S {
     T_PiecesData data;
     T_PieceSide orientation;
     sfVector2i position;
+    sfColor color;
 }T_Piece;
 
 typedef struct T_PieceTransformResult_S {
@@ -221,6 +224,8 @@ T_PieceTransformResult T_Piece_TryTranslation(T_Piece* piece , T_PieceSide side 
 int T_Piece_IsOverlaping(sfVector2i new_position , int new_rotation , const T_Piece* piece , const T_PieceGrid* grid);
 
 int T_Piece_IsOutOfBounds(sfVector2i new_position , int new_rotation , const T_Piece* piece , const T_PieceGrid* grid);
+
+int T_Piece_IsOriginOutOfGrid(sfVector2i new_position , int new_rotation , const T_Piece* piece , const T_PieceGrid* grid);
 
 void T_ShowPieces(const T_PiecesData pieces);
 
