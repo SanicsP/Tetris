@@ -44,6 +44,8 @@ void game_pause(Game* game);
 
 void game_resume(Game* game);
 
+void game_restart(Game * game);
+
 GameState game_get_state(const Game* game);
 
 

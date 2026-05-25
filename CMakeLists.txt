@@ -63,7 +63,7 @@ add_executable(TETRIS
 
 target_compile_definitions(TETRIS PUBLIC ${CSFML_COMPILE_DEFINITIONS})
 
-target_compile_options(TETRIS PUBLIC -Wall)
+target_compile_options(TETRIS PUBLIC -Wall -O3)
 
 foreach(X IN ITEMS 
                 ${CSFML_INCLUDE_DIR} 

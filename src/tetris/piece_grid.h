@@ -45,7 +45,7 @@ void T_PieceGrid_Destroy(T_PieceGrid* grid);
 */
 void T_PieceGrid_PastPiece(T_PieceGrid* grid , const T_Piece* piece);
 
-void T_PieceGrid_Update(T_PieceGrid* grid , int query_rotation , int query_translation);
+int T_PieceGrid_Update(T_PieceGrid* grid , int query_rotation , int query_translation);
 
 void T_PieceGrid_NewPiece(T_PieceGrid* grid , int type);
 
@@ -55,6 +55,8 @@ int T_PieceGrid_ReajustTokens(T_PieceGrid* grid);
 int T_PieceGrid_TryRemoveAlignedTokens(T_PieceGrid * grid);
 
 int T_PieceGrid_ShrinkTokens(T_PieceGrid* grid  , int removed_row);
+
+int T_PieceGrid_is_GameOver(T_PieceGrid* grid);
 
 
 #endif

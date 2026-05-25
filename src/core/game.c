@@ -3,7 +3,7 @@
 
 void game_init(Game* game) {
     
-    game->window = sfRenderWindow_create((sfVideoMode){.size.x = 800 , .size.y = 800} , "TETRIS" , sfDefaultStyle , 0 , NULL);
+    game->window = sfRenderWindow_create((sfVideoMode){.size.x = 900 , .size.y = 900} , "TETRIS" , sfDefaultStyle , 0 , NULL);
     
     if(!game->window)
     {
@@ -65,7 +65,7 @@ void game_loop(Game* game){
             query_rotation = 1;
         }
 
-        T_PieceGrid_Update(game->tetris_grid , query_rotation , query_translation);
+        int update_result = T_PieceGrid_Update(game->tetris_grid , query_rotation , query_translation);
         
         sfRenderWindow_clear(game->window , sfBlack);
         
@@ -74,22 +74,34 @@ void game_loop(Game* game){
         renderer_draw(&game->renderer , game->window);
 
         sfRenderWindow_display(game->window);
+
+        if(!update_result) {
+            game_restart(game);
+        }
     }
     
 }
 
 void game_stop(Game* game){
-
+    game->state = GS_STOP;
+    game_free_ressources(game);
+    sfRenderWindow_close(game->window);
 }
 
 void game_pause(Game* game){
-
+    game->state = GS_PAUSE;
 }
 
 void game_resume(Game* game){
-
+    game->state = GS_STATE_PLAYING;
 }
 
+void game_restart(Game * game) {
+    game_free_ressources(game);
+
+    game_init(game);
+
+}
 GameState game_get_state(const Game* game){
 
 }

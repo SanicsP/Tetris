@@ -52,12 +52,17 @@ void T_PieceGrid_PastPiece(T_PieceGrid* grid , const T_Piece* piece) {
 }
 
 
-void T_PieceGrid_Update(T_PieceGrid* grid , int query_rotation , int query_translation) 
+int T_PieceGrid_Update(T_PieceGrid* grid , int query_rotation , int query_translation) 
 {
+    if(T_PieceGrid_is_GameOver(grid)) {
+        return 0;
+    }
+
     switch (grid->state)
     {
         case T_GS_INIT : {
             T_PieceGrid_NewPiece(grid , rand() % 7);
+            grid->failling_piece->position.x = rand() % (GRID_WIDTH - T_PIECE_WIDTH);
             grid->state = T_GS_FALLING;
             break;
         }
@@ -96,6 +101,8 @@ void T_PieceGrid_Update(T_PieceGrid* grid , int query_rotation , int query_trans
             break;
         }
     }
+
+    return 1;
 }
 
 void T_PieceGrid_NewPiece(T_PieceGrid* grid , int type) {
@@ -208,4 +215,13 @@ int T_PieceGrid_ShrinkTokens(T_PieceGrid* grid  , int removed_row) {
 
     // printf("tokens shrinked\n");
 
+}
+
+int T_PieceGrid_is_GameOver(T_PieceGrid* grid) {
+
+    for(int x = 0 ; x < GRID_WIDTH ; x++) {
+        if(grid->pieces[FLAT_2D(x , 1 , GRID_WIDTH)]) return 1;
+    }
+
+    return 0;
 }

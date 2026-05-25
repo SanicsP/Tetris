@@ -183,7 +183,7 @@ T_PieceTransformResult T_Piece_TryTranslation(T_Piece* piece , T_PieceSide side 
     if(!is_lateral_translation && is_out_of_bounds) {
         transform_result.is_valid = 0;
         transform_result.new_state = T_GS_UPDATE;
-        piece->position = new_position;
+        //piece->position = new_position;
         return transform_result;
     }
 
@@ -229,11 +229,11 @@ int T_Piece_IsOutOfBounds(sfVector2i new_position , int new_rotation , const T_P
         for(int y_offset = 0; y_offset < T_PIECE_HEIGHT ; y_offset++) {
 
             if(
-                new_position.x + x_offset >= 0 && new_position.x + x_offset < GRID_WIDTH 
-                && new_position.y + y_offset >= 0 && new_position.y + y_offset < GRID_HEIGHT
+                    ( new_position.x + x_offset >= 0 && new_position.x + x_offset < GRID_WIDTH )
+                &&  ( new_position.y + y_offset >= 0 && new_position.y + y_offset < GRID_HEIGHT)
             ) continue;
             
-            int token = piece->data[FLAT_3D(x_offset , y_offset , piece->orientation , T_PIECE_WIDTH , T_PIECE_HEIGHT)];
+            int token = piece->data[FLAT_3D(x_offset , y_offset , new_rotation , T_PIECE_WIDTH , T_PIECE_HEIGHT)];
             //printf("(%d , %d) -> %d\n" , x_offset + new_position.x , y_offset + new_position.y , token);
             if(token) {
                 is_out_of_bounds = 1;
