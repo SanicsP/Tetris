@@ -43,7 +43,7 @@ void T_PieceGrid_PastPiece(T_PieceGrid* grid , const T_Piece* piece) {
             int grid_tok_index = FLAT_2D(piece->position.x + x_offset , piece->position.y + y_offset , GRID_WIDTH);
 
             if(piece->data[piece_tok_index]) {
-                grid->pieces[grid_tok_index] = T_FILLED; 
+                grid->pieces[grid_tok_index] = sfColor_toInteger(piece->color); 
             }
         }
 
@@ -65,14 +65,21 @@ void T_PieceGrid_Update(T_PieceGrid* grid , int query_rotation , int query_trans
             
             T_Piece_TryRotation(grid->failling_piece , query_rotation , grid);
             
-            T_Piece_TryTranslation(grid->failling_piece , query_translation , grid).new_state;
+            grid->state = T_Piece_TryTranslation(grid->failling_piece , query_translation , grid).new_state;
+
+            if(grid->state == T_GS_UPDATE) {
+                T_PieceGrid_PastPiece(grid , grid->failling_piece);
+                break;
+            }
 
             grid->state = T_Piece_TryTranslation(grid->failling_piece , PSIDE_DOWN , grid).new_state;
 
 
             if(grid->state == T_GS_UPDATE) {
                 T_PieceGrid_PastPiece(grid , grid->failling_piece);
+                break;
             }
+
             break;
         }
     

@@ -53,7 +53,7 @@ T_Piece* T_Piece_Create(T_PieceType piece_type) {
     new_piece->position.x = 0;
     new_piece->position.y = 0;
 
-    new_piece->color = get_random_color(); 
+    new_piece->color = utils_get_color_by_type(piece_type); 
 
     switch (piece_type)
     {
@@ -111,11 +111,11 @@ T_PieceTransformResult T_Piece_TryRotation(T_Piece* piece , int positive , T_Pie
     
     switch(T_Piece_IsOriginOutOfGrid(piece->position , new_rotation , piece , grid)){
         case 1 : 
-            new_translation.x -= new_translation.x +1 ; 
+            new_translation.x = 0; 
             break;
 
         case 2 : 
-            new_translation.x -= new_translation.x;
+            new_translation.x = (GRID_WIDTH - 1) - T_PIECE_WIDTH;
             break; 
 
     }
@@ -159,8 +159,12 @@ T_PieceTransformResult T_Piece_TryTranslation(T_Piece* piece , T_PieceSide side 
 
     T_PieceTransformResult transform_result = {.is_valid = 1 , .new_state = T_GS_FALLING};
 
-    int invalid_transform = T_Piece_IsOutOfBounds(new_position , piece->orientation , piece , grid) || 
-                            T_Piece_IsOverlaping(new_position , piece->orientation , piece , grid);
+    
+    int is_out_of_bounds = T_Piece_IsOutOfBounds(new_position , piece->orientation , piece , grid);
+
+    int is_overlaping = T_Piece_IsOverlaping(new_position , piece->orientation , piece , grid);
+    
+    int invalid_transform =  is_out_of_bounds || is_overlaping; 
     
     
     if (is_lateral_translation && invalid_transform) {
@@ -169,13 +173,21 @@ T_PieceTransformResult T_Piece_TryTranslation(T_Piece* piece , T_PieceSide side 
         return transform_result;
     }
 
-    if(!is_lateral_translation && invalid_transform) {
+    if(!is_lateral_translation && is_overlaping) {
         transform_result.is_valid = 0;
         transform_result.new_state = T_GS_UPDATE;
+        piece->position = new_position;
         return transform_result;
     }
-   
 
+    if(!is_lateral_translation && is_out_of_bounds) {
+        transform_result.is_valid = 0;
+        transform_result.new_state = T_GS_UPDATE;
+        piece->position = new_position;
+        return transform_result;
+    }
+
+    
     // printf("\ttranslation performed with success, position updated\n" 
     //             "\told : (%d , %d)\tnew(%d ; %d)\n\n"  , 
     //             old_position.x , old_position.y , new_position.x , new_position.y  
@@ -192,7 +204,7 @@ int T_Piece_IsOverlaping(sfVector2i new_position , int new_rotation , const T_Pi
         for(int x_offset = 0 ; x_offset < T_PIECE_WIDTH; x_offset++ ) {
             
             int piece_token = piece->data[FLAT_3D(x_offset , y_offset , piece->orientation , T_PIECE_WIDTH , T_PIECE_HEIGHT)];
-            int grid_token = grid->pieces[FLAT_2D(piece->position.x + x_offset , piece->position.y + y_offset + 1 , GRID_WIDTH)];
+            int grid_token = grid->pieces[FLAT_2D(new_position.x + x_offset , new_position.y + y_offset + 1 , GRID_WIDTH)];
 
             if(piece_token && grid_token) {
                 //printf("\t[OVERLAP CHECK] OVERLAP \n");
@@ -221,9 +233,9 @@ int T_Piece_IsOutOfBounds(sfVector2i new_position , int new_rotation , const T_P
                 && new_position.y + y_offset >= 0 && new_position.y + y_offset < GRID_HEIGHT
             ) continue;
             
-            int token = piece->data[T_FLATTEN_DATA(x_offset , y_offset , piece->orientation)];
+            int token = piece->data[FLAT_3D(x_offset , y_offset , piece->orientation , T_PIECE_WIDTH , T_PIECE_HEIGHT)];
             //printf("(%d , %d) -> %d\n" , x_offset + new_position.x , y_offset + new_position.y , token);
-            if(token == FILLED) {
+            if(token) {
                 is_out_of_bounds = 1;
                 break;
             } 
@@ -234,6 +246,7 @@ int T_Piece_IsOutOfBounds(sfVector2i new_position , int new_rotation , const T_P
             // printf("\t[After check] Out of bounds !\n");
             return 1;
         } 
+
     }
 
     if(!is_out_of_bounds) {
@@ -246,7 +259,7 @@ int T_Piece_IsOriginOutOfGrid(sfVector2i new_position , int new_rotation , const
     if(new_position.x < 0)  {
         return 1;
     }
-    else if(new_position.x > GRID_WIDTH) {
+    else if(new_position.x > GRID_WIDTH - T_PIECE_WIDTH) {
         return 2;
     }
 

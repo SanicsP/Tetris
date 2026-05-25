@@ -16,5 +16,6 @@
 
 
 sfColor get_random_color();
+sfColor utils_get_color_by_type(int piece_type);
 
 #endif

@@ -21,6 +21,8 @@ typedef struct Renderer_S {
     sfVector2i origin;
     int cell_size;
 
+    sfVertexArray* border_lines;
+
 } Renderer;
 
 
