@@ -22,6 +22,8 @@ void game_init(Game* game) {
         exit(EXIT_FAILURE);
     }
     
+    game->clock = sfClock_create();
+    game->fall_rate = sfMilliseconds(950.f);
 
 }
 

@@ -29,6 +29,11 @@ typedef struct Game_S {
 
     sfEvent event;
 
+    sfClock* clock;
+
+    sfTime fall_rate;
+    
+
 }Game;
 
 

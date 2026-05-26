@@ -95,8 +95,13 @@ void T_Piece_Destroy(T_Piece* piece) {
 }
 
 T_PieceTransformResult T_Piece_TryRotation(T_Piece* piece , int positive , T_PieceGrid* grid) {
+    
+    
     if(positive == 0) 
         return (T_PieceTransformResult){.is_valid = 0 , .new_state = T_GS_FALLING};
+    
+    printf("Trying a rotation : \n");
+    
     int current_rotation = piece->orientation;
 
     int new_rotation = piece->orientation + positive;
@@ -120,13 +125,22 @@ T_PieceTransformResult T_Piece_TryRotation(T_Piece* piece , int positive , T_Pie
 
     }
 
-    if( T_Piece_IsOutOfBounds(piece->position , new_rotation , piece , grid) || 
-        T_Piece_IsOverlaping(piece->position , new_rotation , piece , grid)         
-    ) {
+    if(T_Piece_IsOutOfBounds(new_translation , new_rotation , piece , grid) ) {
         
-        // printf("(ROTATION) couldn't perform rotation !\n");
+        printf("\t Couldn't perform the rotation : out of bounds ! \n");
+        
         transform_result.is_valid = 0;
         transform_result.new_state = T_GS_FALLING;    
+        
+        return transform_result;
+    }
+    if (T_Piece_IsOverlaping(new_translation , new_rotation , piece , grid)) {
+
+        printf("\t Couldn't perform the rotation : overlap ! \n");
+        
+        transform_result.is_valid = 0;
+        transform_result.new_state = T_GS_FALLING;    
+        
         return transform_result;
     }
     
@@ -138,6 +152,9 @@ T_PieceTransformResult T_Piece_TryRotation(T_Piece* piece , int positive , T_Pie
     
     transform_result.is_valid = 1;
     transform_result.new_state = T_GS_FALLING;
+
+    printf("\t Rotation performed with success !\n");
+
     return transform_result;
 }
 
@@ -173,19 +190,28 @@ T_PieceTransformResult T_Piece_TryTranslation(T_Piece* piece , T_PieceSide side 
         return transform_result;
     }
 
-    if(!is_lateral_translation && is_overlaping) {
-        transform_result.is_valid = 0;
-        transform_result.new_state = T_GS_UPDATE;
-        piece->position = new_position;
-        return transform_result;
-    }
-
     if(!is_lateral_translation && is_out_of_bounds) {
         transform_result.is_valid = 0;
         transform_result.new_state = T_GS_UPDATE;
         //piece->position = new_position;
+
+        printf("\nTryTranslation() -> Ground reached\n");
+
         return transform_result;
     }
+
+    if(!is_lateral_translation && is_overlaping) {
+        
+        transform_result.is_valid = 0;
+        transform_result.new_state = T_GS_UPDATE;
+        piece->position = new_position;
+        printf("\nTryTranslation() -> Overlaped with a piece will falling\n");
+
+
+        return transform_result;
+    }
+
+    
 
     
     // printf("\ttranslation performed with success, position updated\n" 
@@ -203,8 +229,13 @@ int T_Piece_IsOverlaping(sfVector2i new_position , int new_rotation , const T_Pi
     for(int y_offset = 0 ; y_offset < T_PIECE_HEIGHT ; y_offset++) {
         for(int x_offset = 0 ; x_offset < T_PIECE_WIDTH; x_offset++ ) {
             
-            int piece_token = piece->data[FLAT_3D(x_offset , y_offset , piece->orientation , T_PIECE_WIDTH , T_PIECE_HEIGHT)];
-            int grid_token = grid->pieces[FLAT_2D(new_position.x + x_offset , new_position.y + y_offset + 1 , GRID_WIDTH)];
+            int piece_idx = FLAT_3D(x_offset , y_offset , new_rotation , T_PIECE_WIDTH , T_PIECE_HEIGHT);
+
+            int grid_idx = FLAT_2D(new_position.x + x_offset , new_position.y + y_offset + 1 , GRID_WIDTH);
+
+            int piece_token = piece->data[piece_idx];
+            
+            int grid_token = grid->pieces[grid_idx];
 
             if(piece_token && grid_token) {
                 //printf("\t[OVERLAP CHECK] OVERLAP \n");
@@ -243,7 +274,7 @@ int T_Piece_IsOutOfBounds(sfVector2i new_position , int new_rotation , const T_P
         }
 
         if(is_out_of_bounds) {
-            // printf("\t[After check] Out of bounds !\n");
+            printf("\t[After check] Out of bounds !\n");
             return 1;
         } 
 

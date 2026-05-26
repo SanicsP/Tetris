@@ -61,6 +61,7 @@ int T_PieceGrid_Update(T_PieceGrid* grid , int query_rotation , int query_transl
     switch (grid->state)
     {
         case T_GS_INIT : {
+            srand(time(NULL));
             T_PieceGrid_NewPiece(grid , rand() % 7);
             grid->failling_piece->position.x = rand() % (GRID_WIDTH - T_PIECE_WIDTH);
             grid->state = T_GS_FALLING;

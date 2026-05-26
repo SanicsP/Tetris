@@ -13,12 +13,13 @@ set(CORE_MODULE_PATH ${CMAKE_SOURCE_DIR}/src/core)
                 ${CORE_MODULE_PATH}/renderer.c
                 ${CORE_MODULE_PATH}/utils.c
                 ${CORE_MODULE_PATH}/main.c
+                ${CORE_MODULE_PATH}/int_queue.c
+
         )
 
 set(SAVE_MODULE_PATH ${CMAKE_SOURCE_DIR}/src/save)
         set(SAVE_MODULE_FILES 
-                ${SAVE_MODULE_PATH}/
-                ${SAVE_MODULE_PATH}/
+                ${SAVE_MODULE_PATH}/score_data.c
         )
 
 set(TETRIS_MODULE_PATH ${CMAKE_SOURCE_DIR}/src/tetris)
@@ -59,6 +60,7 @@ add_executable(TETRIS
         ${CORE_MODULE_FILES} 
         ${TETRIS_MODULE_FILES}
         ${TESTS_MODULE_FILES}
+        ${SAVE_MODULE_FILES}
 )
 
 target_compile_definitions(TETRIS PUBLIC ${CSFML_COMPILE_DEFINITIONS})
@@ -70,6 +72,7 @@ foreach(X IN ITEMS
                 ${CORE_MODULE_PATH} 
                 ${TETRIS_MODULE_PATH}
                 ${TESTS_MODULE_PATH}
+                ${SAVE_MODULE_PATH}
 
         )
         target_include_directories(TETRIS PUBLIC ${X})
@@ -77,3 +80,10 @@ foreach(X IN ITEMS
 endforeach()
 
 target_link_libraries(TETRIS PUBLIC ${CSFML_LINK_LIBRARIES})
+
+file(GLOB DLL_FILES "${CMAKE_SOURCE_DIR}/dlls/*.dll")
+
+foreach(X IN LISTS DLL_FILES) 
+        message(STATUS "[CMAKE DLL FILES] ${X} ADDED")
+        file(COPY "${X}" DESTINATION ${CMAKE_BINARY_DIR})
+endforeach()

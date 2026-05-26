@@ -6,5 +6,6 @@ CSFML/
 *.a
 *.bin
 *.o
-
+*.dll
 state-machine.png
+
