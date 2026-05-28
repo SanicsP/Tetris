@@ -5,9 +5,15 @@
 #include <CSFML/Graphics.h>
 
 #include "renderer.h"
+
 #include <piece.h>
 
+#include <score_data.h>
+
+
 #define GAME_FPS 10
+#define WINDOW_WIDTH GRID_WIDTH*RENDERER_CELL_SIZE
+#define WINDOW_HEIGHT GRID_HEIGHT*RENDERER_CELL_SIZE
 
 typedef enum {
     GS_LAUNCH,
@@ -19,6 +25,7 @@ typedef enum {
 
 
 typedef struct Game_S {
+    
     GameState state;
     
     Renderer renderer;
@@ -33,6 +40,8 @@ typedef struct Game_S {
 
     sfTime fall_rate;
     
+    save_ScoreData player_data;
+
 
 }Game;
 

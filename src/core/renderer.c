@@ -6,7 +6,7 @@
 
 void renderer_init(Renderer* renderer) {
 
-    renderer->origin = (sfVector2i){200 , 50};
+    renderer->origin = (sfVector2i){0 , 0};
     renderer->cell_size = RENDERER_CELL_SIZE;
     
     for(int y = 0 ; y < GRID_HEIGHT ; y++){

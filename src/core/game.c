@@ -3,7 +3,7 @@
 
 void game_init(Game* game) {
     
-    game->window = sfRenderWindow_create((sfVideoMode){.size.x = 900 , .size.y = 900} , "TETRIS" , sfDefaultStyle , 0 , NULL);
+    game->window = sfRenderWindow_create((sfVideoMode){.size.x = WINDOW_WIDTH , .size.y = WINDOW_HEIGHT} , "CETRIS" , sfDefaultStyle , 0 , NULL);
     
     if(!game->window)
     {
@@ -24,6 +24,8 @@ void game_init(Game* game) {
     
     game->clock = sfClock_create();
     game->fall_rate = sfMilliseconds(950.f);
+
+    game->player_data = (save_ScoreData){0};
 
 }
 
@@ -80,6 +82,18 @@ void game_loop(Game* game){
         if(!update_result) {
             game_restart(game);
         }
+
+        switch (update_result)
+        {
+            case 2 :
+                save_ScoreData_IncreaseScore(&game->player_data , 1);
+                printf("[GAME] Score : %u\n" , game->player_data.score);
+            break;
+        
+            default:
+                break;
+        }
+
     }
     
 }

@@ -99,6 +99,7 @@ int T_PieceGrid_Update(T_PieceGrid* grid , int query_rotation , int query_transl
 
         case T_GS_REMOVE : {
             grid->state = T_PieceGrid_TryRemoveAlignedTokens(grid);
+            if(grid->state == T_GS_REMOVE) return 2;
             break;
         }
     }

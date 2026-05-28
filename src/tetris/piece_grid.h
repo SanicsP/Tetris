@@ -7,7 +7,7 @@
 #define FILLED     1
 #define EMPTY      0
 
-#define GRID_WIDTH 16
+#define GRID_WIDTH 20
 #define GRID_HEIGHT 35
 
 #include <stdlib.h>

@@ -65,7 +65,7 @@ add_executable(TETRIS
 
 target_compile_definitions(TETRIS PUBLIC ${CSFML_COMPILE_DEFINITIONS})
 
-target_compile_options(TETRIS PUBLIC -Wall -O3)
+target_compile_options(TETRIS PUBLIC -Wall -O3 -mwindows)
 
 foreach(X IN ITEMS 
                 ${CSFML_INCLUDE_DIR} 
@@ -87,3 +87,5 @@ foreach(X IN LISTS DLL_FILES)
         message(STATUS "[CMAKE DLL FILES] ${X} ADDED")
         file(COPY "${X}" DESTINATION ${CMAKE_BINARY_DIR})
 endforeach()
+
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/data")
